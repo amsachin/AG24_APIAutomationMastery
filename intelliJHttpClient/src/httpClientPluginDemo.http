@@ -1,0 +1,144 @@
+###
+# APITestAutomation - Exported Postman test suite
+
+
+###
+# @name Post a tutorial
+POST http://localhost:8080/api/tutorials
+Content-Type: application/json
+
+{
+  "title": "API Test Automation" ,
+  "description": "Comprehensive API Test Automation: From Introduction to Expertise" ,
+  "published": true
+}
+
+###
+# @name Post a tutorial2
+POST http://localhost:8080/api/tutorials
+Content-Type: application/json
+
+{
+  "title": "Spring Hibernate Many-to-Many" ,
+  "description": "Many-to-Many mapping tutorial" ,
+  "published": true
+}
+
+###
+# @name Create API Tag, assign to a Tutorial
+POST http://localhost:8080/api/tutorials/1/tags
+Content-Type: application/json
+
+{
+  "name": "API"
+}
+
+###
+# @name Create a Java Tag, assign to a Tutorial
+POST http://localhost:8080/api/tutorials/1/tags
+Content-Type: application/json
+
+{
+  "name": "Java"
+}
+
+###
+# @name Create a Spring Tag, assign to a Tutorial
+POST http://localhost:8080/api/tutorials/2/tags
+Content-Type: application/json
+
+{
+  "name": "Spring"
+}
+
+###
+# @name Add an existing Tag to a Tutorial
+POST http://localhost:8080/api/tutorials/1/tags
+Content-Type: application/json
+
+{
+  "id": 1
+}
+
+###
+# @name Get All tutorials
+GET http://localhost:8080/api/tutorials
+
+> {%
+    // TODO: you can add here Response handler
+%}
+
+###
+# @name Get All tags
+GET http://localhost:8080/api/tutorials
+
+> {%
+    // TODO: you can add here Response handler
+%}
+
+
+###
+# @name Get All tutorials - Assertions
+GET http://localhost:8080/api/tutorials
+
+> {%
+    // pm.test("Response status code is 200 OK", function () {
+    // pm.response.to.have.status(200);
+    // });
+    client.test("Response status code is 200 OK", function () {
+        client.assert(response.status=== 200, "Response status is not 200");
+    });
+
+    // pm.test("Check if 'title' property exists in the response", function () {
+    //     pm.expect(pm.response.json()[0]).to.have.property('title');
+    // });
+
+    client.test("Check if 'title' property exists in the response", function () {
+        const jsonObj = response.body;
+        client.assert(jsonObj[0].hasOwnProperty("title"), "'title' property doesn't exist in the response");
+    });
+
+    // pm.test("Check if 'name' property exists in the 'tags'", function () {
+    //     console.log(pm.response.json()[0].tags[0])
+    //     pm.expect(pm.response.json()[0].tags[0]).to.have.property('name');
+    // });
+    client.test("Check if 'name' property exists in the 'tags'", function () {
+        const jsonObj = response.body;
+        client.assert(jsonObj[0].tags[0].hasOwnProperty("name"), "'name' property doesn't exist in the 'tags'");
+    });
+
+    // // Assert that at least one tag has the name "API"
+    // pm.test("Check if 'name=API' is in one of the tags", function () {
+    //     let tags = pm.response.json()[0].tags
+    //     var tagFound = false;
+    //     for (var i = 0; i < tags.length; i++) {
+    //         if (tags[i].name === "API") {
+    //             tagFound = true;
+    //             break;
+    //         }
+    //     }
+    //     pm.expect(tagFound).to.be.true;
+    // });
+    //
+
+    client.test("Check if 'name=Spring' is in one of the tags", function () {
+        const tags = response.body[0].tags;
+        let tagFound = false;
+        for (let i = 0; i < tags.length; i++) {
+            if (tags[i].name === "Spring") {
+                tagFound = true;
+                break;
+            }
+        }
+        client.log("tagFound value=" + tagFound)
+        client.assert(tagFound == true, "'name=Spring' is NOT in one of the tags");
+    });
+%}
+
+###
+# @name Get a tutorial by ID
+GET http://localhost:8080/api/tutorials/2
+
+###
+# @name Delete a tutorial by ID
+DELETE http://localhost:8080/api/tutorials/1
